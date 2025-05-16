@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Image Labelling Tool</title>
+  <meta name="description" content="A simple image annotation tool that runs entirely on your browser. (Elvis Tony)">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    .sidebar-left,
+    .sidebar-right,
+    .main-canvas {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-left {
+      /* width: 200px; */
+      left: 0;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      padding: 10px;
+    }
+
+    .sidebar-right {
+      right: 0;
+      padding: 10px;
+    }
+
+    .main-canvas {
+      top: 50px;
+      left: 70px;
+      right: 300px;
+      background: #f0f0f0;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    .hidden-left .sidebar-left {
+      left: -100px;
+    }
+
+    .hidden-left .main-canvas {
+      left: 0;
+    }
+
+    .hidden-right .sidebar-right {
+      right: -300px !important;
+    }
+
+    .hidden-right .main-canvas {
+      right: 0;
+    }
+
+    button {
+      padding: 5px 10px;
+      margin: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .hide-btn-left {
+      align-self: center;
+      margin-bottom: 10px;
+    }
+
+    .hidden-left * > .hide-btn-left{
+      left: 0;
+      position: fixed;
+      rotate: 180deg;
+    }
+
+</style>
+<body class="bg-light h-100">
+
+  <!-- Top Bar -->
+  <div class="fixed-top bg-white shadow d-flex justify-content-between align-items-center px-3" style="height: 3rem; z-index: 1030;">
+    <div class="fw-semibold h-100 d-flex align-items-center">
+      <span class="fs-5">Simple Labelling Tool</span>
+      <span class="ms-3 small">
+        <input type="text" style="width: 200px; outline: 0px; border: 0px;" id="project-name" value="very-wild-project" class="form-control d-inline-block" />
+        <i class="fa fa-pencil ms-2"></i>
+      </span>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <input type="file" accept=".limg" id="projectImport" class="d-none" />
+      <input type="file" accept="image/*" id="newImageInput" class="d-none" />
+      <button onclick="document.getElementById('projectImport').click()" class="btn btn-primary btn-sm"><i class="fa fa-upload"></i> Import .limg</button>
+      <button onclick="newProject()" class="btn btn-warning btn-sm text-white"><i class="fa fa-plus"></i> New</button>
+      <button onclick="saveProject()" class="btn btn-success btn-sm"><i class="fa fa-download"></i> Download</button>
+      <button onclick="printMainCanvas()">Print</button>
+      <button class="hide-btn-right btn btn-muted btn-sm" onclick="toggleSidebar('right')" title="Show/ Hide this bar"><i class="fa fa-bars"></i></button>
+    </div>
+  </div>
+
+  <!-- Left Toolbar -->
+  <div class="sidebar-left bg-white shadow d-flex flex-column align-items-center py-3" style="top: 3rem; bottom: 0; width: 4rem; z-index: 1020;">
+    <button id="opt-pan" onclick="setTool('pan')" class="tool-button" title="Mouse Pointer"><i class="fa fa-mouse-pointer"></i></button>
+    <button id="opt-annotate" onclick="setTool('annotate')" class="tool-button active" title="Annotate"><i class="fa fa-map-marker"></i></button>
+    <button class="hide-btn-left tool-button" onclick="toggleSidebar('left')" title="Show/ Hide this bar"><i class="fa fa-chevron-left"></i></button>
+  </div>
+
+  <!-- Right Sidebar for Annotation Cards -->
+  <div class="sidebar-right bg-white shadow overflow-auto p-3" style="top: 3rem; right: 0; bottom: 0; width: 20%; z-index: 1020;">
+    <h4 class="text-center fw-bold text-dark">Labels</h4>
+    
+    <div class="w-100" id="annotationList"></div>
+  </div>
+
+  <!-- Main Canvas Area -->
+  <div class="position-absolute main-canvas"  >
+    <div id="canvasContainer" class="w-100 h-100 d-flex justify-content-center align-items-center position-relative">
+      <div class="position-relative" id="imageWrapper">
+        <canvas id="imageCanvas" class="d-block"></canvas>
+        <div id="markerOverlay" class="position-absolute top-0 start-0 z-3" style="pointer-events: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .tool-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background-color 0.2s ease;
+      border: none;
+    }
+    .tool-button:hover {
+      background-color: #e2e6ea;
+    }
+    .tool-button.active {
+      border: 1px solid #6c757d;
+    }
+    .annotation-marker {
+      background-color: #1873c9;
+      opacity: 0.5;
+      color: white;
+      cursor: pointer;
+      height: 30px;
+      width: 30px;
+      text-align: center;
+      position: absolute;
+      border-radius: 50%;
+      border: 3px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      transition: 0.2s ease;
+      z-index: 30;
+    }
+    .annotation-marker:hover {
+      opacity: 1;
+    }
+    .annotation-marker.active {
+      background-color: orange;
+      opacity: 1;
+    }
+    .annotation-card {
+      border: 2px solid lightgray;
+      border-left: 4px solid #0d6efd;
+      border-radius: 5px;
+      padding: 15px;
+      cursor: pointer;
+      background-color: #f8f9fa;
+      margin-bottom: 1rem;
+    }
+    .annotation-card.active {
+      background-color: #fffbe4;
+    }
+    .textarea-container {
+      width: 100%;
+      background-color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid lightgray;
+    }
+    .annotation-card textarea {
+      width: 100%;
+      resize: none;
+      border: none;
+      outline: none;
+      background: white;
+      font-size: 0.875rem;
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    let currentTool = 'annotate';
+    let annotationCounter = 1;
+    let annotations = [];
+    let historyStack = [];
+    let redoStack = [];
+    let currentImageFileName = "";
+    let scale = 1;
+    let img = new Image();
+    let selectedAnnotationId = null;
+ 
+    function setTool(tool) {
+      currentTool = tool;
+      document.querySelector('.tool-button.active').classList.remove('active')
+      document.querySelector('#opt-'+tool).classList.add('active')
+    }
+ 
+    function saveToHistory() {
+      historyStack.push(JSON.stringify(annotations));
+      redoStack = [];
+    }
+ 
+    function undo() {
+      if (historyStack.length === 0) return;
+      redoStack.push(JSON.stringify(annotations));
+      annotations = JSON.parse(historyStack.pop());
+      annotationCounter = annotations.length + 1;
+      renderAnnotations();
+    }
+ 
+    function redo() {
+      if (redoStack.length === 0) return;
+      historyStack.push(JSON.stringify(annotations));
+      annotations = JSON.parse(redoStack.pop());
+      annotationCounter = annotations.length + 1;
+      renderAnnotations();
+    }
+ 
+    function newProject() {
+      document.getElementById('newImageInput').click();
+    //   document.getElementById('intro').style.display='none';
+    }
+ 
+    function drawImageOnCanvas() {
+      const canvas = document.getElementById('imageCanvas');
+      const ctx = canvas.getContext('2d');
+      const maxWidth = window.innerWidth * 0.8;
+      const maxHeight = window.innerHeight * 0.9;
+      scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      renderAnnotations();
+    }
+ 
+    const randomWords = ["victory","smiling","snuggle","rabbit","overload","downhill","portrayal","twine","modernist","outlet","amount","nitrate","gridlock","jovial","party","protagonist","second","degree","swallow","empire","relapse"]
+    const projectName = randomWords[Math.floor(Math.random() * randomWords.length)]+'-'+randomWords[Math.floor(Math.random() * randomWords.length)]+'-'+randomWords[Math.floor(Math.random() * randomWords.length)];
+    document.getElementById('project-name').value = projectName
+
+    document.getElementById('newImageInput').addEventListener('change', (e) => {
+     
+      const file = e.target.files[0];
+      if (!file) return;
+      currentImageFileName = file.name;
+      const reader = new FileReader();
+      reader.onload = () => {
+        img.onload = () => {
+          annotations = [];
+          annotationCounter = 1;
+          historyStack = [];
+          redoStack = [];
+          drawImageOnCanvas();
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+ 
+    function saveProject() {
+      const zip = new JSZip();
+      fetch(img.src)
+        .then(res => res.blob())
+        .then(blob => {
+          zip.file(currentImageFileName, blob);
+          zip.file('label.json', JSON.stringify({
+            image: { filename: currentImageFileName },
+            labels: annotations
+          }, null, 2));
+          zip.generateAsync({ type: 'blob' }).then(content => {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(content);
+            a.download = (document.getElementById('project-name').value || "project")+'.limg';
+            a.click();
+          });
+        });
+    }
+ 
+    function renderAnnotations() {
+      const overlay = document.getElementById('markerOverlay');
+      const list = document.getElementById('annotationList');
+      overlay.innerHTML = '';
+      list.innerHTML = '';
+      overlay.style.width = `${img.width * scale}px`;
+      overlay.style.height = `${img.height * scale}px`;
+ 
+      annotations.forEach((ann, index) => {
+        const marker = document.createElement('div');
+        marker.className = 'annotation-marker';
+        marker.style.pointerEvents='auto';
+        marker.style.left = `${ann.x * scale - 15}px`;
+        marker.style.top = `${ann.y * scale - 15}px`;
+        marker.textContent = index + 1;
+        marker.dataset.id = ann.id;
+        if (selectedAnnotationId === ann.id) marker.classList.add('active');
+        marker.onclick = () => {
+          selectedAnnotationId = ann.id;
+          renderAnnotations();
+        };
+        overlay.appendChild(marker);
+ 
+        const card = document.createElement('div');
+        card.className = `annotation-card ${(selectedAnnotationId === ann.id)?"active":""}`;
+        card.innerHTML = `
+          <div class="d-flex justify-content-between items-center mb-1">
+            <span class="text-md text-dark font-bold">#${index + 1}</span>
+            <button onclick="deleteAnnotation(${ann.id})" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+          </div>
+          <div class="textarea-container">
+            <textarea data-id="${ann.id}">${ann.desc}</textarea>
+          </div>
+        `;
+ 
+ 
+        card.onclick = () => {
+        if(event.target.tagName!='TEXTAREA'){
+            selectedAnnotationId = ann.id;
+          renderAnnotations();
+          console.log()
+        }
+         
+        };
+        const textarea = card.querySelector('textarea');
+        textarea.addEventListener('focus', () => {
+          selectedAnnotationId = ann.id;
+        //   renderAnnotations();
+        });
+        textarea.addEventListener('input', (e) => {
+          ann.desc = e.target.value;
+        });
+ 
+        list.appendChild(card);
+      });
+    }
+ 
+    function deleteAnnotation(id) {
+      saveToHistory();
+      annotations = annotations.filter(a => a.id !== id);
+      annotationCounter = annotations.length + 1;
+      selectedAnnotationId = null;
+      renderAnnotations();
+    }
+ 
+    document.getElementById('imageCanvas').addEventListener('click', (e) => {
+      if (currentTool !== 'annotate') return;
+      const rect = e.target.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / scale;
+      const y = (e.clientY - rect.top) / scale;
+ 
+      saveToHistory();
+ 
+      annotations.push({ id: Date.now(), x, y, desc: 'Description here' });
+      annotationCounter++;
+      renderAnnotations();
+    });
+ 
+    document.getElementById('projectImport').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+    //   document.getElementById('intro').style.display='none';
+      if (!file || !file.name.endsWith('.limg')) return;
+      document.getElementById('project-name').value = file.name.replace('.limg','');
+      const zip = await JSZip.loadAsync(file);
+      const jsonStr = await zip.file('label.json').async('string');
+      const data = JSON.parse(jsonStr);
+      const imgBlob = await zip.file(data.image.filename).async('blob');
+ 
+      currentImageFileName = data.image.filename;
+      annotations = data.labels;
+      annotationCounter = annotations.length + 1;
+ 
+      img.onload = () => {
+        drawImageOnCanvas();
+      };
+      img.src = URL.createObjectURL(imgBlob);
+    });
+ 
+    document.addEventListener('keydown', (e) => {
+     if (e.ctrlKey && e.key === 'n') {
+        e.preventDefault();
+        newProject();
+      }
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        saveProject();
+      }
+      if (e.ctrlKey && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+      if (e.ctrlKey && e.key === 'y') {
+        e.preventDefault();
+        redo();
+      }
+      if (e.key === 'Delete' && selectedAnnotationId !== null) {
+        deleteAnnotation(selectedAnnotationId);
+      }
+    });
+  </script>
+    <script>
+    function toggleSidebar(side) {
+      const body = document.body.classList;
+      if (side === 'left') {
+        body.toggle('hidden-left');
+      } else if (side === 'right') {
+        body.toggle('hidden-right');
+      }
+    }
+function printMainCanvas() {
+  const canvas = document.getElementById('canvasContainer');
+
+  // Open a new print window
+  const printWindow = window.open('', '_blank');
+
+  // Create the document structure
+  const doc = printWindow.document;
+
+  const html = doc.createElement('html');
+  const head = doc.createElement('head');
+  const title = doc.createElement('title');
+  title.textContent = 'Print Preview';
+
+  const style = doc.createElement('style');
+  style.textContent = `
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 1in;
+      }
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .print-container {
+        padding: 1em;
+      }
+    }
+  `;
+
+  head.appendChild(title);
+  head.appendChild(style);
+  html.appendChild(head);
+
+  const body = doc.createElement('body');
+  const container = doc.createElement('div');
+  container.className = 'print-container';
+
+  // Clone mainCanvas content
+  const canvasClone = canvas.cloneNode(true);
+  container.appendChild(canvasClone);
+
+  // Create list
+  const heading = doc.createElement('h3');
+  heading.textContent = 'List Below:';
+  container.appendChild(heading);
+
+  const list = doc.createElement('ul');
+  ['Item A', 'Item B', 'Item C'].forEach(text => {
+    const li = doc.createElement('li');
+    li.textContent = text;
+    list.appendChild(li);
+  });
+  container.appendChild(list);
+
+  body.appendChild(container);
+  html.appendChild(body);
+  doc.innerHTML = html.outerHTML;
+
+  // Add print script after DOM is loaded
+  doc.close();
+  printWindow.onload = function () {
+    printWindow.focus();
+    printWindow.print();
+    printWindow.onafterprint = function () {
+      printWindow.close();
+    };
+  };
+}
+</script>
+</body>
+</html>
