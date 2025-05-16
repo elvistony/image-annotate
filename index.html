@@ -130,6 +130,33 @@
   </div>
 
   <style>
+
+    [data-title]:hover:after {
+    opacity: 1;
+    transition: all 0.2s ease 0.5s;
+    visibility: visible;
+}
+[data-title]:after {
+    content: attr(data-title);
+    background-color: white;
+    border-radius: 5px;
+    
+    color: #111;
+    font-size: 150%;
+    position: absolute;
+    padding: 1px 5px 2px 5px;
+    /* bottom: -1.6em; */
+    left: 110%;
+    white-space: nowrap;
+    box-shadow: 1px 1px 3px #222222;
+    opacity: 0;
+    border: 1px solid #111111;
+    z-index: 99999;
+    visibility: hidden;
+}
+[data-title] {
+    position: relative;
+}
     .tool-button {
       width: 40px;
       height: 40px;
@@ -320,7 +347,8 @@
         marker.style.left = `${ann.x * scale - 15}px`;
         marker.style.top = `${ann.y * scale - 15}px`;
         marker.textContent = index + 1;
-        marker.title = ann.desc;
+        marker.setAttribute('data-title',ann.desc)
+        // marker.title = ann.desc;
         marker.dataset.id = ann.id;
         if (selectedAnnotationId === ann.id) marker.classList.add('active');
         marker.onclick = () => {

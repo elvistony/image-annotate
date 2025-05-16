@@ -4,8 +4,9 @@ A Simple Image Annotator. Period.
 ![A Screenshot of the annotator tool in action!](/examples/screenshots/demo.png)
 
 # Demo
-[Image Annotate](https://elvistony.dev/image-annotate)
+Click for a Live Demo!: [Image Annotate](https://elvistony.dev/image-annotate)
 
+![A Screenshot of the annotator tool in action!](/examples/screenshots/close-up.png)
 ## Features
 - Import images of various formats (`png`,`jpg`,`svg`,`tiff`,`gif`)
 - Uses client computation for the whole processing.
@@ -14,6 +15,9 @@ A Simple Image Annotator. Period.
 - Keyboard shortcuts!  
     - `Ctrl+S` to Save
     - `Ctrl+Z` to Undo and `Ctrl+Y` to Redo
+
+
+
 
 ## Why?
 An app for this, an app for that, this is a webpage that can open up in your browser that can annotate images of various formats (see docs). 
