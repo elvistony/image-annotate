@@ -320,6 +320,7 @@
         marker.style.left = `${ann.x * scale - 15}px`;
         marker.style.top = `${ann.y * scale - 15}px`;
         marker.textContent = index + 1;
+        marker.title = ann.desc;
         marker.dataset.id = ann.id;
         if (selectedAnnotationId === ann.id) marker.classList.add('active');
         marker.onclick = () => {
