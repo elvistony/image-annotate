@@ -1,7 +1,7 @@
 # Pixel Pointer v0.2
 A Simple Image Annotator. Period.
 
-![A Screenshot of the annotator tool in action!](/examples/screenshots/demo.png)
+![A Screenshot of the annotator tool in action!](/examples/screenshots/demo_v2.png)
 
 # Demo
 Click for a Live Demo!: [Pixel Pointer](https://elvistony.dev/image-annotate)
@@ -12,7 +12,10 @@ Click for a Live Demo!: [Pixel Pointer](https://elvistony.dev/image-annotate)
 - Uses client computation for the whole processing.
 - Runs on your favorite browsers (`chrome`,`firefox`,`edge`)
 - Uses a project style architecture with a custom file format `.limg` (Labelled Image)
-- Keyboard shortcuts!  
+- A Menu Bar (sorta) layout.
+- Keyboard shortcuts!
+    - `Ctrl+I` to Import a new Image
+    - `Ctrl+O` to Open a `.limg` project
     - `Ctrl+S` to Save
     - `Ctrl+Z` to Undo and `Ctrl+Y` to Redo
 
