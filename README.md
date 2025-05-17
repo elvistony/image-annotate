@@ -16,7 +16,10 @@ Click for a Live Demo!: [Image Annotate](https://elvistony.dev/image-annotate)
     - `Ctrl+S` to Save
     - `Ctrl+Z` to Undo and `Ctrl+Y` to Redo
 
-
+## Upcoming (Under Development)
+- Export as PDF document
+- Export as PNG (maybe?)
+- Export as (something cool)
 
 
 ## Why?
