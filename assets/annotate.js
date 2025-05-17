@@ -72,7 +72,7 @@ function toggleSidebar(side) {
     //   document.getElementById('intro').style.display='none';
     }
  
-    newProject()
+    // newProject()
 
     function drawImageOnCanvas() {
       const canvas = document.getElementById('imageCanvas');

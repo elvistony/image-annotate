@@ -1,10 +1,10 @@
-# Image Annotation Tool
+# Pixel Pointer v0.2
 A Simple Image Annotator. Period.
 
 ![A Screenshot of the annotator tool in action!](/examples/screenshots/demo.png)
 
 # Demo
-Click for a Live Demo!: [Image Annotate](https://elvistony.dev/image-annotate)
+Click for a Live Demo!: [Pixel Pointer](https://elvistony.dev/image-annotate)
 
 ![A Screenshot of the annotator tool in action!](/examples/screenshots/close-up.png)
 ## Features
