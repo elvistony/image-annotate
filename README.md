@@ -1,4 +1,4 @@
-# Pixel Pointer v0.2
+# Pixel Pointer v0.3-alpha
 A Simple Image Annotator. Period.
 
 ![A Screenshot of the annotator tool in action!](/examples/screenshots/demo_v2.png)
