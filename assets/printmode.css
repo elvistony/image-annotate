@@ -1,3 +1,72 @@
-.sidebar-left{
+.body-container{
+    display: flex;
+    width: 210mm;
+    /* justify-content: space-between; */
+    background: white;
+}
+
+#canvas-container{
+    scale: 0.7;
+    height: fit-content;
+}
+
+.paper{
+    
+    /* width: 100%; */
+    background-color: white;
+    margin: auto;
+}
+
+#label-container{
+    width: 35rem;
+    text-align: center;
+    margin: auto;
+    margin-top: 30px;
+}
+
+
+
+.main-canvas{
+    position: unset !important;
+    overflow: visible;
+}
+
+.annotation-marker.active {
+    background-color: #1873c9;
+    opacity: 1;
+}
+
+.annotation-card.active {
+    background-color: unset;
+}
+
+.sub-details{
+    display: block !important;
+}
+
+.btn{
     display: none;
+}
+
+@media print {
+    /* html, body {
+        width: 210mm;
+        height: 297mm;
+    } */
+    
+    .paper{
+        page-orientation: landscape;
+    }
+    
+    #label-container{
+        break-before: always !important;
+    }
+ 
+    .annotation-card{
+        break-inside: avoid !important;
+    }
+
+  .annotation-marker{
+    opacity: 1;
+  }
 }

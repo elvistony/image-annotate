@@ -178,11 +178,11 @@ button {
     visibility: visible;
 }
 
-[data-title]:after {
+/* [data-title]:after {
     opacity: 1 !important;
     transition: all 0.2s ease 0.5s;
     visibility: visible !important;
-}
+} */
 
 [data-title]:after {
     content: attr(data-title);

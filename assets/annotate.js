@@ -1,44 +1,15 @@
-// const Swal = require('sweetalert2')
-
-const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-    }
-});
-
-
-function showDocs() {
-    Swal.fire('Pixel Pointers', `This is an open source project, Visit <a href="https://github.com/elvistony/image-annotate/" target="_blank">Docs<a> to know more about the software`, '')
-}
-
-// Sidebars
-function toggleSidebar(side) {
-    const body = document.body.classList;
-    if (side === 'left') {
-        body.toggle('hidden-left');
-    } else if (side === 'right') {
-        body.toggle('hidden-right');
-        document.getElementsByClassName('sidebar-right')[0].classList.toggle('d-sm-show')
-    }
-}
-
 // Annotate
 
     let currentTool = 'annotate';
-    let annotationCounter = 1;
-    let annotations = [];
+    // let annotationCounter = 1;
     let historyStack = [];
     let redoStack = [];
-    let currentImageFileName = "";
-    let scale = 1;
-    let img = new Image();
-    let selectedAnnotationId = null;
+    // let currentImageFileName = "";
+    // let scale = 1;
+    // let img = new Image();
+    // let selectedAnnotationId = null;
+    // let viewMode = true;
+    viewMode = false;
  
     function setTool(tool) {
       currentTool = tool;
@@ -74,18 +45,18 @@ function toggleSidebar(side) {
  
     // newProject()
 
-    function drawImageOnCanvas() {
-      const canvas = document.getElementById('imageCanvas');
-      const ctx = canvas.getContext('2d');
-      const maxWidth = window.innerWidth * 0.8;
-      const maxHeight = window.innerHeight * 0.9;
-      scale = Math.min(maxWidth / img.width, maxHeight / img.height);
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      renderAnnotations();
-    }
+    // function drawImageOnCanvas() {
+    //   const canvas = document.getElementById('imageCanvas');
+    //   const ctx = canvas.getContext('2d');
+    //   const maxWidth = window.innerWidth * 0.8;
+    //   const maxHeight = window.innerHeight * 0.9;
+    //   scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+    //   canvas.width = img.width * scale;
+    //   canvas.height = img.height * scale;
+    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    //   renderAnnotations();
+    // }
  
     const randomWords = ["victory","smiling","snuggle","rabbit","overload","downhill","portrayal","twine","modernist","outlet","amount","nitrate","gridlock","jovial","party","protagonist","second","degree","swallow","empire","relapse"]
     const projectName = randomWords[Math.floor(Math.random() * randomWords.length)]+'-'+randomWords[Math.floor(Math.random() * randomWords.length)]+'-'+randomWords[Math.floor(Math.random() * randomWords.length)];
@@ -103,7 +74,7 @@ function toggleSidebar(side) {
           annotationCounter = 1;
           historyStack = [];
           redoStack = [];
-          drawImageOnCanvas();
+          drawImageOnCanvas(img);
         };
         img.src = reader.result;
       };
@@ -129,72 +100,72 @@ function toggleSidebar(side) {
         });
     }
  
-    function renderAnnotations() {
-      const overlay = document.getElementById('markerOverlay');
-      const list = document.getElementById('annotationList');
-      overlay.innerHTML = '';
-      list.innerHTML = '';
-      overlay.style.width = `${img.width * scale}px`;
-      overlay.style.height = `${img.height * scale}px`;
+    // function renderAnnotations() {
+    //   const overlay = document.getElementById('markerOverlay');
+    //   const list = document.getElementById('annotationList');
+    //   overlay.innerHTML = '';
+    //   list.innerHTML = '';
+    //   overlay.style.width = `${img.width * scale}px`;
+    //   overlay.style.height = `${img.height * scale}px`;
  
-      annotations.forEach((ann, index) => {
-        const marker = document.createElement('div');
-        marker.className = 'annotation-marker';
-        marker.style.pointerEvents='auto';
-        marker.style.left = `${ann.x * scale - 15}px`;
-        marker.style.top = `${ann.y * scale - 15}px`;
-        marker.textContent = index + 1;
-        marker.setAttribute('data-title',ann.title || '')
-        // marker.title = ann.desc;
-        marker.dataset.id = ann.id;
-        if (selectedAnnotationId === ann.id) marker.classList.add('active');
-        marker.onclick = () => {
-          selectedAnnotationId = ann.id;
-          renderAnnotations();
-        };
-        overlay.appendChild(marker);
+    //   annotations.forEach((ann, index) => {
+    //     const marker = document.createElement('div');
+    //     marker.className = 'annotation-marker';
+    //     marker.style.pointerEvents='auto';
+    //     marker.style.left = `${ann.x * scale - 15}px`;
+    //     marker.style.top = `${ann.y * scale - 15}px`;
+    //     marker.textContent = index + 1;
+    //     marker.setAttribute('data-title',ann.title || '')
+    //     // marker.title = ann.desc;
+    //     marker.dataset.id = ann.id;
+    //     if (selectedAnnotationId === ann.id) marker.classList.add('active');
+    //     marker.onclick = () => {
+    //       selectedAnnotationId = ann.id;
+    //       renderAnnotations();
+    //     };
+    //     overlay.appendChild(marker);
  
-        const card = document.createElement('div');
-        card.className = `annotation-card ${(selectedAnnotationId === ann.id)?"active":""}`;
-        card.innerHTML = `
-        <span class="label-index ${(selectedAnnotationId === ann.id)?"active":""}">${index+1}</span>
-        <div class="input-group input-group-sm mb-1">
-        <input type="text" class="form-control" placeholder="Title" value="${ann.title || ''}" aria-describedby="button-addon2">
-        <button onclick="deleteAnnotation(${ann.id})" class="btn btn-danger" type="button"><i class="fa fa-trash"></i></button>
-        </div>
-        <textarea class="form-control sub-details" data-id="${ann.id}">${ann.desc}</textarea>
-        `;
+    //     const card = document.createElement('div');
+    //     card.className = `annotation-card ${(selectedAnnotationId === ann.id)?"active":""}`;
+    //     card.innerHTML = `
+    //     <span class="label-index ${(selectedAnnotationId === ann.id)?"active":""}">${index+1}</span>
+    //     <div class="input-group input-group-sm mb-1">
+    //     <input type="text" class="form-control" placeholder="Title" value="${ann.title || ''}" aria-describedby="button-addon2">
+    //     <button onclick="deleteAnnotation(${ann.id})" class="btn btn-danger" type="button"><i class="fa fa-trash"></i></button>
+    //     </div>
+    //     <textarea class="form-control sub-details" data-id="${ann.id}">${ann.desc}</textarea>
+    //     `;
  
  
-        card.onclick = () => {
-            console.log(event.target.tagName in ['BUTTON','TEXTAREA','INPUT'])
-        if(!['BUTTON','TEXTAREA','INPUT'].includes(event.target.tagName )){
-            selectedAnnotationId = ann.id;
-            renderAnnotations();
+    //     card.onclick = () => {
+    //         console.log(event.target.tagName in ['BUTTON','TEXTAREA','INPUT'])
+    //     if(!['BUTTON','TEXTAREA','INPUT'].includes(event.target.tagName )){
+    //         selectedAnnotationId = ann.id;
+    //         renderAnnotations();
           
-        }
+    //     }
          
-        };
-        const textarea = card.querySelector('textarea');
-        const titleInput = card.querySelector('input');
-        titleInput.addEventListener('focus', () => {
-          selectedAnnotationId = ann.id;
-        //   renderAnnotations();
-        });
-        textarea.addEventListener('focus', () => {
-          selectedAnnotationId = ann.id;
-        //   renderAnnotations();
-        });
-        titleInput.addEventListener('input', (e) => {
-          ann.title = e.target.value;
-        });
-        textarea.addEventListener('input', (e) => {
-          ann.desc = e.target.value;
-        });
+    //     };
+    //     const textarea = card.querySelector('textarea');
+    //     const titleInput = card.querySelector('input');
+    //     titleInput.addEventListener('focus', () => {
+    //       selectedAnnotationId = ann.id;
+    //     //   renderAnnotations();
+    //     });
+    //     textarea.addEventListener('focus', () => {
+    //       selectedAnnotationId = ann.id;
+    //     //   renderAnnotations();
+    //     });
+    //     titleInput.addEventListener('input', (e) => {
+    //       ann.title = e.target.value;
+    //     });
+    //     textarea.addEventListener('input', (e) => {
+    //       ann.desc = e.target.value;
+    //     });
  
-        list.appendChild(card);
-      });
-    }
+    //     list.appendChild(card);
+    //   });
+    // }
  
     function deleteAnnotation(id) {
 
@@ -224,7 +195,6 @@ function toggleSidebar(side) {
       
     }
 
-    let imageBlob;
  
     document.getElementById('imageCanvas').addEventListener('click', (e) => {
       if (currentTool !== 'annotate') return;
@@ -254,7 +224,7 @@ function toggleSidebar(side) {
       annotationCounter = annotations.length + 1;
  
       img.onload = () => {
-        drawImageOnCanvas();
+        drawImageOnCanvas(img);
       };
       img.src = URL.createObjectURL(imgBlob);
 
@@ -292,93 +262,7 @@ function toggleSidebar(side) {
 
 // Annotate Ends
 
-// Print Function
-let NEWWINDOW;
-function printMainCanvas() {
-    const canvasContainer = document.getElementById('canvasContainer');
-    NEWWINDOW = window.open('', '_blank');
-    const doc = NEWWINDOW.document;
-    doc.head.innerHTML=`
-    <link rel="stylesheet" href="assets/annotate.css">
-    `
-    doc.body.appendChild(doc.importNode(canvasContainer,true))
-    canvasContainer.toBlob((blob) => {
-        canvas = canvasContainer.querySelector('canvas');
-        const newImg = document.createElement("img");
-        const url = URL.createObjectURL(blob);
-
-        newImg.src = url;
-        doc.body.querySelector('canvas').renderImage(url)
-    });
-    
-
-//   // Create the document structure
-//   const doc = NEWWINDOW.document;
-
-//   const html = doc.createElement('html');
-//   const head = doc.createElement('head');
-//   const title = doc.createElement('title');
-//   title.textContent = 'Print Preview';
-
-//   const style = doc.createElement('style');
-//   style.textContent = `
-//     @media print {
-//       @page {
-//         size: A4 portrait;
-//         margin: 1in;
-//       }
-//       body {
-//         font-family: sans-serif;
-//         margin: 0;
-//         padding: 0;
-//       }
-//       .print-container {
-//         padding: 1em;
-//       }
-//     }
-//   `;
-
-//   head.appendChild(title);
-//   head.appendChild(style);
-//   html.appendChild(head);
-
-//   const body = doc.createElement('body');
-//   const container = doc.createElement('div');
-//   container.className = 'print-container';
-
-//   // Clone mainCanvas content
-//   const canvasClone = canvas.cloneNode(true);
-//   container.appendChild(canvasClone);
-
-//   // Create list
-//   const heading = doc.createElement('h3');
-//   heading.textContent = 'List Below:';
-//   container.appendChild(heading);
-
-//   const list = doc.createElement('ul');
-//   ['Item A', 'Item B', 'Item C'].forEach(text => {
-//     const li = doc.createElement('li');
-//     li.textContent = text;
-//     list.appendChild(li);
-//   });
-//   container.appendChild(list);
-
-//   body.appendChild(container);
-//   html.appendChild(body);
-//   doc.innerHTML = html.outerHTML;
-
-//   // Add print script after DOM is loaded
-//   doc.close();
-//   printWindow.onload = function () {
-//     printWindow.focus();
-//     printWindow.print();
-//     printWindow.onafterprint = function () {
-//       printWindow.close();
-//     };
-//   };
-}
-
-function openDivWithCanvasInNewTab() {
+async function  openDivWithCanvasInNewTab() {
   const originalContainer = document.getElementById('main-body');
 
   if (!originalContainer) {
@@ -393,99 +277,138 @@ function openDivWithCanvasInNewTab() {
     // It's good practice to ensure the document in the new tab is ready
     // A minimal HTML structure can be written.
     newTab.document.open();
-    newTab.document.write(`<html><head>
-        <title>Print to PDF</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="assets/annotate.css">
-        <link rel="stylesheet" href="assets/printmode.css">
-        </head>
-        <body></body></html>`);
+    var res = await fetch('assets/templates/printmode.html');
+    let htmlContent = await res.text();
+    newTab.document.write(htmlContent);
     newTab.document.close();
 
-    // 1. Clone the entire container's DOM structure
-    const clonedContainer = originalContainer.cloneNode(true);
-
-    // 2. Apply the original container's computed styles to the cloned container
-    // const computedStyle = window.getComputedStyle(originalContainer);
-    // for (const property of computedStyle) {
-    //   clonedContainer.style[property] = computedStyle[property];
-    // }
-
-    // 3. Append the cloned container (with its structure) to the new tab's body
-    newTab.document.body.appendChild(clonedContainer);
-
-    // 4. Now, specifically handle the canvas elements to copy their content
-    const originalCanvases = originalContainer.querySelectorAll('canvas');
-    const clonedCanvases = clonedContainer.querySelectorAll('canvas'); // These are the canvases inside clonedContainer
-
-    if (originalCanvases.length !== clonedCanvases.length) {
-        console.warn("Mismatch in the number of original and cloned canvases. Content copy might be incomplete.");
-    }
-
-    originalCanvases.forEach((originalCanvas, index) => {
-      if (clonedCanvases[index]) {
-        const clonedCanvas = clonedCanvases[index];
-
-        // Ensure the cloned canvas has the correct dimensions (cloneNode should handle this, but explicit is safer)
-        clonedCanvas.width = originalCanvas.width;
-        clonedCanvas.height = originalCanvas.height;
-
-        // Get the 2D context of the original canvas
-        const originalCtx = originalCanvas.getContext('2d');
-        // Get the 2D context of the cloned canvas (in the new tab)
-        const clonedCtx = clonedCanvas.getContext('2d');
-
-        if (originalCtx && clonedCtx) {
-          // Option 1: Using drawImage directly (if contexts are compatible and accessible)
-          // This might have issues if the new tab is considered a different origin immediately,
-          // though for blank tabs it often works.
-          // clonedCtx.drawImage(originalCanvas, 0, 0);
-
-          // Option 2: Using toDataURL() - More robust for transferring to a new window/tab
-          const dataURL = originalCanvas.toDataURL();
-          const img = new newTab.Image(); // Create an Image object in the new tab's context
-
-          img.onload = function() {
-            clonedCtx.drawImage(img, 0, 0);
-          };
-          img.onerror = function() {
-            console.error("Error loading canvas image data into new tab's image element.");
-          }
-          img.src = dataURL;
-
-        } else {
-          console.error(`Could not get 2D context for original or cloned canvas at index ${index}.`);
+    // Canvas Import
+    const originalCanvas = originalContainer.querySelector('canvas');
+    const clonedCanvas = originalCanvas.cloneNode(true);
+    clonedCanvas.width = originalCanvas.width;
+    clonedCanvas.height = originalCanvas.height;
+    const originalCtx = originalCanvas.getContext('2d');
+    const clonedCtx = clonedCanvas.getContext('2d');
+    if (originalCtx && clonedCtx) {
+        const dataURL = originalCanvas.toDataURL();
+        const img = new newTab.Image(); // Create an Image object in the new tab's context
+        img.onload = function() {
+        clonedCtx.drawImage(img, 0, 0);
+        };
+        img.onerror = function() {
+        console.error("Error loading canvas image data into new tab's image element.");
         }
-      } else {
-        console.warn(`No corresponding cloned canvas found for original canvas at index ${index}.`);
-      }
-    });
-
+        img.src = dataURL;
+    }
+    
+    newTab.document.querySelector('#main-canvas').replaceWith(document.querySelector('.main-canvas').cloneNode(true));
+    newTab.document.querySelector('.main-canvas').classList.remove('position-absolute')
+    newTab.document.querySelector('#imageCanvas').replaceWith(clonedCanvas)
+    newTab.document.querySelector('#project-name').innerHTML=document.getElementById('project-name').value;
+    newTab.document.querySelector('#label-list').appendChild(document.getElementById('annotationList').cloneNode(true));
+    // Label Import
+    
   } else {
     console.error("Could not open a new tab. Pop-up blocker might be active.");
   }
 }
 
-// Example of how to attach this to a button click:
-// Make sure you have a button with this ID in your HTML:
-// <button id="openContainerButton">Open Container in New Tab</button>
+// Export as WebView
 
-// const openButton = document.getElementById('openContainerButton');
-// if (openButton) {
-//   openButton.addEventListener('click', openDivWithCanvasInNewTab);
-// }
+async function saveProjectAsHTML() {
+  try {
+    const response = await fetch(img.src);
+    const blob = await response.blob();
+    const reader = new FileReader();
+    const base64Image = await new Promise((resolve, reject) => {
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    const labelData = {
+      image: { filename: currentImageFileName },
+      labels: annotations
+    };
+    const labelJson = JSON.stringify(labelData, null, 2);
+    var res = fetch('assets/templates/savemode.html').then((res)=>{
+        return res.text();
+    }).then((htmlContent)=>{
+        htmlContent = htmlContent.replace('{{BASE64}}',base64Image)
+        htmlContent = htmlContent.replace('{{PROJECTNAME}}',projectName)
+        htmlContent = htmlContent.replace('{{JSONDATA}}',labelJson)
+        const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+        const htmlObjectURL = URL.createObjectURL(htmlBlob);
+        const a = document.createElement('a');
+        a.href = htmlObjectURL;
+        a.download = (document.getElementById('project-name').value || "project") + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(htmlObjectURL);
+    })
+  } catch (error) {
+    console.error("Error saving project as HTML:", error);
+  }
+}
 
-// Example of how to attach this to a button click:
-// const openButton = document.getElementById('openCanvasButton');
-// if (openButton) {
-//   openButton.addEventListener('click', openCanvasContainerInNewTab);
-// }
+// Import WebView
 
-// You can call this function when you want to open the canvas in a new tab,
-// for example, on a button click:
-// const openButton = document.getElementById('openCanvasButton');
-// if (openButton) {
-//   openButton.addEventListener('click', openCanvasInNewTab);
-// }
+function readTextFile() {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.txt, .log, .text, .md, .js, .json, .html, .css'; // Accept only text files. Add more if needed
+    input.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        reject('No file selected.');
+        return;
+      }
+      if (!file.type.startsWith('text/') &&
+          file.type !== 'application/json' &&  // add json
+          file.type !== 'application/javascript' && // add js
+          file.type !== 'text/html' && // add html
+          file.type !== 'text/css' // add css
+         )
+       {
+          reject('Invalid file type. Please select a text file.');
+          return;
+      }
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        resolve(reader.result);
+      });
 
-// Print End
+      reader.addEventListener('error', () => {
+        reject('Error reading file.');
+      });
+
+      reader.addEventListener('abort', () => {
+        reject('File reading aborted.');
+      });
+      reader.readAsText(file);
+    });
+    input.click();
+  });
+}
+
+function importWebView(){
+readTextFile()
+  .then(textContent => {
+    // console.log('File content:', htmlContent);
+    let htmlContent = textContent;
+    let base64Data =  htmlContent.split('visibility: hidden;" src="')[1].split('" alt="">')[0];
+    let jsonData =  htmlContent.split('jsonStr = `')[1].split('`;')[0];
+    // console.log(base64Image)
+    console.log(jsonData)
+    // let img = new Image()
+    img.src = base64Data;
+    img.onload = ()=>{
+        loadEmbeddedData(jsonData,img);
+    }
+  })
+  .catch(error => {
+    console.log(error)
+    Swal.fire('Error Processing File',"Please ensure you're imporing a PixelPointer WebView export",'warning')
+  });
+}

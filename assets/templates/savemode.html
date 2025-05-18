@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="author" content="Elvis Tony" />
+        <link rel="shortcut icon" href="https://elvistony.dev/image-annotate/pixpoint.svg" type="image/x-icon">
+        <title>Pixel Pointers</title>
+        <meta name="description" content="A simple image annotation tool that runs entirely on your browser. (Elvis Tony)">
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://elvistony.dev/image-annotate/annotate.css">
+    </head>
+    <body class="bg-gray">
+        <nav class="navbar nav-on-top navbar-expand-lg navbar-light bg-light">
+            <div class="container mx-0" style="max-width:100%">
+                <a class="navbar-brand" href="#"> 
+                    <img src="https://elvistony.dev/image-annotate/pixpoint.svg" width="30" alt="">
+                    Pixel Pointers</a>
+                    <span class="badge bg-dark" style="cursor: pointer;" onclick="Swal.fire('View Only Mode',`This file is a view only copy, use the <a target='_blank' href='https:/\/\/elvistony.dev/image-annotate/#/import/'>Pixel Pointer</a> to Import this file and edit it`,'warning')">View Only</span>
+                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav  mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Edit</a>
+                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">View Mode</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#" onclick="showDocs()">Docs</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="Swal.fire('Pixel Pointers', 'A simple image annotation tool that is open-source, easy to use and shareable!', '')">About</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="#" onclick="Swal.fire('Pixel Pointers', 'v0.1-alpha', '')">Version</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="input-group input-group-sm mx-auto" style="width: 250px;">
+                        
+                        <input type="text" class="form-control" readonly id="project-name">
+                        <span class="input-group-text">.limg</span>
+                    </div>
+                    <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="Basic example">
+                        <button class="btn btn-primary" id="opt-pan" onclick="setTool('pan')"  title="Mouse Pointer"><i class="fa fa-mouse-pointer"></i></button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container" id="main-body">
+            <div class="main-canvas"  >
+                <div id="canvasContainer" class="w-100 h-100 d-flex justify-content-center align-items-center position-relative">
+                <div class="position-relative border-rounded" style="border: 1px;" id="imageWrapper">
+                    <canvas id="imageCanvas" class="d-block"></canvas>
+                    <div id="markerOverlay" class="position-absolute top-0 start-0 z-3" style="pointer-events: none;"></div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <button class="hide-btn-right d-md-block tool-button float-right" onclick="toggleSidebar('right')" title="Show/ Hide this bar"><i class="fa fa-chevron-right"></i></button>
+            <div class="d-none d-md-block sidebar-right bg-white shadow overflow-auto p-3" style="top: 4.5rem; right: 0.5rem; bottom: 4.5rem; border-radius: 10px; width: 20%; z-index: 1020;">
+                <div class="d-flex p-3">
+                    <h4 class="text-dark">Labels</h4>
+                    <hr>
+                </div>
+                <div class="w-100" id="annotationList"></div>
+            </div>
+        </div>
+        <img id="exportedImage" style="display: none;visibility: hidden;" src="{{BASE64}}" alt="">
+        
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://elvistony.dev/image-annotate/common.js"></script>
+        <script src="https://elvistony.dev/image-annotate/viewer.js"></script>
+        <script>
+            document.querySelector('#project-name').value='{{PROJECTNAME}}';
+            // const embeddedImage = new Image()
+            // img.src = `{{BASE64}}`;
+            
+            let embeddedImage = document.getElementById('exportedImage');
+            viewMode = true;
+
+            const jsonStr = `{{JSONDATA}}`;
+
+            setTimeout(()=>{
+                loadEmbeddedData(jsonStr,embeddedImage)
+            },1000)
+
+        </script>
+        
+    </body>
+</html>
