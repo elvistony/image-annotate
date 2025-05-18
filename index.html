@@ -31,7 +31,7 @@
 
                                 <li><a class="dropdown-item" href="#" onclick="saveProject()"><i class="fa fa-download"></i> Save Project  <span class="key-hint">[Ctrl+S]</span> </a></li>
                                 <li><hr class="dropdown-divider" /></li><li><a class="dropdown-item" href="#" onclick="importWebView()"><i class="fa fa-upload"></i> Import WebView <span class="key-hint">[Ctrl+H]</span></a></li>
-                                <li><a class="dropdown-item" href="#">Export as PDF</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="openDivWithCanvasInNewTab()">Export as PDF</a></li>
                                 <li><a class="dropdown-item" href="#" onclick="saveProjectAsHTML()">Export as WebView</a></li>
                             </ul>
                         </li>
@@ -65,7 +65,7 @@
                         <button class="btn btn-primary" id="opt-annotate" onclick="setTool('annotate')"  title="Annotate"><i class="fa fa-map-marker"></i></button>
                         <button type="button" class="btn btn-info" onclick="newProject()"><i class="fa fa-plus"></i> New</button>
                         <button type="button" class="btn btn-warning" onclick="document.getElementById('projectImport').click()"><i class="fa fa-upload"></i> Open .limg</button>
-                        <button type="button" class="btn btn-success"><i class="fa fa-download"></i> Download</button>
+                        <button type="button" class="btn btn-success" onclick="saveProject()"><i class="fa fa-download"></i> Download</button>
                         <button type="button" class="btn btn-primary" onclick="openDivWithCanvasInNewTab()"><i class="fa fa-eye"></i> View</button>
                     </div>
                 </div>
