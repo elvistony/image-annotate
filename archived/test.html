@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas with Pan, Zoom, Markers</title>
+  <style>
+    #canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 90vh;
+      border: 1px solid #ccc;
+      overflow: hidden;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .marker {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: red;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      cursor: grab;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+<div id="canvas-wrapper">
+  <div id="canvas-container">
+    <canvas id="mainCanvas"></canvas>
+    <div id="marker-layer"></div>
+  </div>
+</div>
+
+<!-- Zoom buttons -->
+<button onclick="instance.zoomIn()">Zoom In</button>
+<button onclick="instance.zoomOut()">Zoom Out</button>
+
+<script src="https://cdn.jsdelivr.net/npm/panzoom@9.4.0/dist/panzoom.min.js"></script>
+<script>
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+const markerLayer = document.getElementById('marker-layer');
+const container = document.getElementById('canvas-container');
+
+let image = new Image();
+image.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg/800px-Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg';
+
+let markers = [
+  { id: 1, x: 200, y: 200 },
+  { id: 2, x: 300, y: 100 }
+];
+
+let transform = { x: 0, y: 0, scale: 1 };
+
+image.onload = () => {
+  canvas.width = image.width;
+  canvas.height = image.height;
+  ctx.drawImage(image, 0, 0);
+  renderMarkers();
+};
+
+function renderMarkers() {
+  markerLayer.innerHTML = '';
+  markers.forEach(marker => {
+    const el = document.createElement('div');
+    el.className = 'marker';
+    el.style.left = `${marker.x}px`;
+    el.style.top = `${marker.y}px`;
+    el.setAttribute('data-id', marker.id);
+    el.draggable = true;
+
+    el.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('id', marker.id);
+    });
+
+    markerLayer.appendChild(el);
+  });
+}
+
+markerLayer.addEventListener('dragover', e => e.preventDefault());
+markerLayer.addEventListener('drop', e => {
+  const id = parseInt(e.dataTransfer.getData('id'));
+  const rect = markerLayer.getBoundingClientRect();
+  const mx = (e.clientX - rect.left - transform.x) / transform.scale;
+  const my = (e.clientY - rect.top - transform.y) / transform.scale;
+
+  const marker = markers.find(m => m.id === id);
+  if (marker) {
+    marker.x = mx;
+    marker.y = my;
+    renderMarkers();
+    applyTransform();
+  }
+});
+
+// Panzoom instance
+const instance = panzoom(container, {
+  smoothScroll: false,
+  bounds: true,
+  zoomDoubleClickSpeed: 1,
+  beforeWheel: e => !e.ctrlKey,
+  beforeMouseDown: e => !e.ctrlKey
+});
+
+instance.on('transform', (e) => {
+  const { x, y, scale } = e.getTransform();
+  transform = { x, y, scale };
+  applyTransform();
+});
+
+function applyTransform() {
+  container.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`;
+
+  // Reposition markers
+  const all = markerLayer.querySelectorAll('.marker');
+  all.forEach(el => {
+    const id = parseInt(el.dataset.id);
+    const marker = markers.find(m => m.id === id);
+    el.style.left = `${marker.x}px`;
+    el.style.top = `${marker.y}px`;
+  });
+}
+</script>
+
+</body>
+</html>
